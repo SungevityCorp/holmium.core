@@ -1,6 +1,7 @@
 import unittest
 import time
 from  holmium.core import Page, Element, Locators
+from holmium.core.pageobject import NonexistentElement
 from tests.utils import get_driver, make_temp_page
 import hiro
 
@@ -69,4 +70,4 @@ class ElementTest(unittest.TestCase):
         self.assertTrue(runner.get_response() == None)
         self.driver.refresh()
         with hiro.Timeline().scale(10):
-            self.assertEqual(page.id_el_changed, None)
+            self.assertEqual(page.id_el_changed, NonexistentElement())
