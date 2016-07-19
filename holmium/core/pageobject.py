@@ -430,6 +430,9 @@ class NonexistentElement(object):
                                                                                         self.webdriver_exception,
                                                                                         self.locator_type, self.query_string)
 
+    def __nonzero__(self):
+        return False
+
     def __repr__(self):
         return "holmium.core.pageobject."+str(self)
 
