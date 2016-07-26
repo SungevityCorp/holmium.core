@@ -439,6 +439,9 @@ class NonexistentElement(object):
     def __getattr__(self, key):
         raise Exception("{}".format(self))
 
+    def exists(self):
+        return False
+
 class Element(ElementGetter):
     """
     Utility to get a :class:`selenium.webdriver.remote.webelement.WebElement`
@@ -655,7 +658,7 @@ class Section(Faceted):
                 self.locator_type, self.query_string
             )
         except (NoSuchElementException, TimeoutException):
-            return NonexistentElement(
+            NonexistentElement(
                 self.locator_type, self.query_string
             )
 
