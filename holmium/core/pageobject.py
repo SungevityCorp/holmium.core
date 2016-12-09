@@ -16,7 +16,8 @@ from functools import wraps
 import appium
 
 import selenium.webdriver.common.by
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, WebDriverException, \
+    InvalidElementStateException
 from selenium.common.exceptions import TimeoutException, NoSuchFrameException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
@@ -44,11 +45,14 @@ def _get_with_stale_element_retry(get_fn):
         stale_ref_or_first_try = False
         try:
             return_value = get_fn()
-        except StaleElementReferenceException as sere:
+        except StaleElementReferenceException:
             tries+=1
             log.warn("Stale Element Reference Exception -- going to refetch element.")
             time.sleep(.2)
             stale_ref_or_first_try = True
+        except InvalidElementStateException: # it's gone
+            return return_value
+
     return return_value
 
 def switch_to_iframe(iframe_or_frames, driver ):
@@ -438,6 +442,17 @@ class NonexistentElement(object):
 
     def __getattr__(self, key):
         raise Exception("{}".format(self))
+
+    def wait_until_gone(self, timeout=30, **kwargs):
+        """
+        Wait until this element is no longer on the page.
+        Since this is the NonexistentElement, it never exists
+        so will always return 0.0 when called.
+
+        :param timeout: max time  in seconds to wait.
+        :return: elapsed seconds as a float
+        """
+        return 0.0
 
 class Element(ElementGetter):
     """
