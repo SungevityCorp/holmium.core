@@ -34,6 +34,13 @@ from .facets import Faceted, ElementFacet, CopyOnCreateFacetCollectionMeta
 from .logger import log
 
 
+class SnapshottedException(Exception):
+        def __init__(self, message, snapshot_path, inner_exception=None):
+            self.message = message
+            self.snapshot_path = snapshot_path
+            self.inner_exception = inner_exception
+
+
 def _get_with_stale_element_retry(get_fn):
     stale_ref_or_first_try = True
     MAX_TRIES = 10
@@ -256,7 +263,9 @@ class Page(Faceted):
                         file = save_screenshot(attr_getter("driver"))
                         log.error("Error trying to execute {0}".format(attr))
                         log.error("Screenshot saved to {0}".format(file))
-                        raise wde
+                        raise SnapshottedException(wde.msg,
+                                                   snapshot_path=file,
+                                                   inner_exception=wde)
                     if issubclass(resp.__class__, WebElement):
                         return resp
                     elif resp is NonexistentElement():
@@ -475,7 +484,11 @@ class Element(ElementGetter):
             return_value = NonexistentElement(type(e).__name__, self.locator_type, self.query_string)
         except NoSuchFrameException as e:
             snapfile = save_screenshot(Page.get_driver())
-            raise Exception("NoSuchFrameException ({0}):  Snapshot saved as {1}".format(str(e), snapfile))
+            raise SnapshottedException(
+                "NoSuchFrameException ({0}):  Snapshot saved as {1}".format(
+                    str(e), snapfile),
+                snapfile
+            )
         return return_value
 
 
