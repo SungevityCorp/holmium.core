@@ -260,12 +260,11 @@ class Page(Faceted):
                         resp = _get_with_stale_element_retry(get_fn)
                     except WebDriverException as wde:
                         traceback.print_exc()
-                        file = save_screenshot(attr_getter("driver"))
                         log.error("Error trying to execute {0}".format(attr))
-                        log.error("Screenshot saved to {0}".format(file))
-                        raise SnapshottedException(wde.msg,
-                                                   snapshot_path=file,
-                                                   inner_exception=wde)
+                        raise_snapshotted_exception(
+                            wde.msg,
+                            inner_exception=wde
+                        )
                     if issubclass(resp.__class__, WebElement):
                         return resp
                     elif resp is NonexistentElement():
@@ -448,6 +447,17 @@ class NonexistentElement(object):
     def __getattr__(self, key):
         raise Exception("{}".format(self))
 
+
+def raise_snapshotted_exception(msg, inner_exception=None):
+    snapfile = save_screenshot(Page.get_driver())
+    fullmsg = "{msg}\nSnapshot saved as {snapfile}".format(msg, snapfile)
+    raise SnapshottedException(
+        fullmsg,
+        snapfile,
+        inner_exception=inner_exception
+    )
+
+
 class Element(ElementGetter):
     """
     Utility to get a :class:`selenium.webdriver.remote.webelement.WebElement`
@@ -483,11 +493,8 @@ class Element(ElementGetter):
         except (NoSuchElementException, TimeoutException) as e:
             return_value = NonexistentElement(type(e).__name__, self.locator_type, self.query_string)
         except NoSuchFrameException as e:
-            snapfile = save_screenshot(Page.get_driver())
-            raise SnapshottedException(
-                "NoSuchFrameException ({0}):  Snapshot saved as {1}".format(
-                    str(e), snapfile),
-                snapfile
+            raise_snapshotted_exception(
+                "NoSuchFrameException ({0})".format(str(e))
             )
         return return_value
 
