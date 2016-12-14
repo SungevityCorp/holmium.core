@@ -76,7 +76,7 @@ class LazyWebDriver(object):
             pass  # pragma: no cover
         except WebDriverException as wde:  # pragma: no cover
             if 'already finished' in wde.msg:
-                print "Ignoring error on quit of already finished session"
+                print("Ignoring error on quit of already finished session")
                 return
             else:
                 raise wde

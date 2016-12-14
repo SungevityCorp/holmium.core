@@ -454,8 +454,7 @@ def raise_snapshotted_exception(msg, inner_exception=None):
     raise SnapshottedException(
         fullmsg,
         snapfile,
-        inner_exception=inner_exception
-    ), None, inner_exception
+    ) from inner_exception
 
 
 class Element(ElementGetter):

@@ -195,7 +195,7 @@ class HolmiumNose(Plugin):
                     for driver in ENV["drivers"]:
                         driver.safe_quit()
             else:
-                print "WARNING: holmium_config unset on {0}".format(self)
+                print("WARNING: holmium_config unset on {0}".format(self))
 
         elif ENV.get("driver"):
             for driver in ENV["drivers"]:
@@ -213,7 +213,7 @@ class HolmiumNose(Plugin):
                     raise UnexpectedAlertPresentException(text)
                 except Exception as e:
                     if is_local_mode:
-                        print "Got exception {0}.  Screenshot to be found in {1}".format(e, snapfile)
+                        print("Got exception {0}.  Screenshot to be found in {1}".format(e, snapfile))
                     else:
                         raise e
 
