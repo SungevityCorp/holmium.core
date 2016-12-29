@@ -450,12 +450,15 @@ class NonexistentElement(object):
 
 def raise_snapshotted_exception(msg, inner_exception=None):
     snapfile = save_screenshot(Page.get_driver())
-    fullmsg = "{msg}\nSnapshot saved as {snapfile}".format(msg, snapfile)
+    fullmsg = "{msg}\nSnapshot saved as {snapfile}".format(
+        msg=msg,
+        snapfile=snapfile
+    )
     raise SnapshottedException(
         fullmsg,
         snapfile,
         inner_exception=inner_exception
-    ), None, inner_exception
+    )
 
 
 class Element(ElementGetter):
