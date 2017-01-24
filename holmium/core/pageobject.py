@@ -454,11 +454,21 @@ def raise_snapshotted_exception(msg, inner_exception=None):
         msg=msg,
         snapfile=snapfile
     )
+    """ 
+    To be used when we go to python 3:  
     raise SnapshottedException(
         fullmsg,
         snapfile,
         inner_exception=inner_exception
     )
+    
+    Until then...
+    """
+    log.error(fullmsg)
+    if inner_exception:
+        raise inner_exception
+    else:
+        raise SnapshottedException(fullmsg, snapfile)
 
 
 class Element(ElementGetter):
